@@ -29,6 +29,4 @@ COPY . /app/
 EXPOSE 8000
 
 # 8. Start the application
-# Make sure to replace 'your_project' with the folder name containing wsgi.py
-# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "mysite.wsgi:application"]
 CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:8000", "mysite.wsgi:application"]
