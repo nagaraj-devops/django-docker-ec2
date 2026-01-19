@@ -13,30 +13,59 @@ Deploy a Django App with Docker &amp; DockerHub on a Virtual Machine
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone git@github.com:nagaraj-devops/django-docker-ec2.git
 cd django-docker-ec2
 ```
 
-### 2. Create a Dockerfile
+### 2. Create a Dockerfile for Django
 
 Create a `Dockerfile` in the project root directory:
 
 ```dockerfile
-FROM python:3.9-slim
+Use an official Python runtime as a base image
+FROM python:3.9
 
+Set the working directory
 WORKDIR /app
 
-COPY requirements.txt .
+Copy the project files
+COPY . /app/
+
+Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
-
+Expose the application port
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+Start the Django application using Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "your_project.wsgi:application"]
 ```
 
-### 3. Create requirements.txt
+### 3. Create a `docker-compose.yml` (Optional)
+```yaml
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+"8000:8000"
+    volumes:
+.:/app
+    environment:
+DEBUG=False
+    depends_on:
+db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: django
+      POSTGRES_PASSWORD: django
+      POSTGRES_DB: django_db
+```
+
+### 4. Create requirements.txt
 
 Create a `requirements.txt` file with your Django dependencies:
 
@@ -50,16 +79,18 @@ Django>=3.2
 gunicorn>=20.1.0
 ```
 
-### 4. Build the Docker Image Locally
+### 5. Build and Test Your Docker Image Locally
+
+Run the following command in your Django project directory:  
 
 ```bash
-docker build -t your-username/django-docker-ec2:latest .
+docker build -t django-docker-ec2 .
 ```
 
-### 5. Test the Container Locally
+Once the build is complete, test it by running:  
 
 ```bash
-docker run -p 8000:8000 your-username/django-docker-ec2:latest
+docker run -p 8000:8000 django-docker-ec2
 ```
 
 Visit `http://localhost:8000` to verify the app is running.
@@ -73,7 +104,7 @@ docker login
 
 Push the image:
 ```bash
-docker push your-username/django-docker-ec2:latest
+docker push sajjannagaraj/django-docker-ec2:latest
 ```
 
 ### 7. Deploy on EC2
@@ -93,8 +124,8 @@ sudo usermod -a -G docker ubuntu
 
 Pull and run the container:
 ```bash
-docker pull your-username/django-docker-ec2:latest
-docker run -d -p 80:8000 --name django-app your-username/django-docker-ec2:latest
+docker pull sajjannagaraj/django-docker-ec2:latest
+docker run -d -p 80:8000 --name django-app sajjannagaraj/django-docker-ec2:latest
 ```
 
 ### 8. Verify Deployment
