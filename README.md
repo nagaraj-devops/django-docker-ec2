@@ -44,21 +44,19 @@ CMD ["gunicorn", "--bind", "0.0.0.0:8000", "your_project.wsgi:application"]
 ### 3. Create a `docker-compose.yml` (Optional)
 ```yaml
 version: '3.8'
-
 services:
   web:
     build: .
     ports:
-"8000:8000"
+      - '8000:8000'
     volumes:
-.:/app
+      - '.:/app'
     environment:
-DEBUG=False
+      DEBUG: 'False'
     depends_on:
-db
-
+      - db
   db:
-    image: postgres:13
+    image: 'postgres:13'
     environment:
       POSTGRES_USER: django
       POSTGRES_PASSWORD: django
