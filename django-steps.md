@@ -20,8 +20,10 @@ On Windows:
 ## Step 3: Install Django and Dependencies
 
 ```bash
-pip install --upgrade pip
-pip install Django gunicorn
+# pip install --upgrade pip
+pip install django
+# django-admin startproject mysite .
+# pip install Django gunicorn
 ```
 
 ## Step 4: Create requirements.txt
@@ -33,7 +35,7 @@ pip freeze > requirements.txt
 ## Step 5: Create a Django Project (if starting fresh)
 
 ```bash
-django-admin startproject mysite
+django-admin startproject mysite .
 ```
 
 ## Step 6: Create a Django App (if starting fresh)
