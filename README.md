@@ -22,22 +22,30 @@ cd django-docker-ec2
 Create a `Dockerfile` in the project root directory:
 
 ```dockerfile
-Use an official Python runtime as a base image
-FROM python:3.9
+# Use an official Python runtime as a base image
+FROM python:3.9-slim
 
-Set the working directory
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Set the working directory
 WORKDIR /app
 
-Copy the project files
-COPY . /app/
+# Install system dependencies (e.g., for Postgres)
+RUN apt-get update && apt-get install -y libpq-dev gcc && rm -rf /var/lib/apt/lists/*
 
-Install dependencies
+# Copy the requirements file first to leverage Docker cache
+COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-Expose the application port
+# Copy the rest of the project files
+COPY . /app/
+
+# Expose the application port
 EXPOSE 8000
 
-Start the Django application using Gunicorn
+# Start the application
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "your_project.wsgi:application"]
 ```
 
